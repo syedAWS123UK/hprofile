@@ -11,4 +11,27 @@ jobs:
         run: mvn test
       - name: Checkstyle
         run: mvn checkstyle:checkstyle
-        
+
+    # Setup Java 11 to be default for Sonar-scanner requirement
+      - name: Set Java 11
+        uses: actions/setup-jave@v3
+        with:
+          distrition: 'temurin'
+          java-version: '11'
+
+    # Setup sonar-scanner
+      - name: Setup SonarQube
+        uses: warchant/setup-sonar-scanner@v7
+
+    # Run sonar-scanner
+      - name: SonarQube Scan
+        run: sonar-scanner
+           -Dsonar.host.url=${{ secrets.SONAR_URL }}
+           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+           -Dsonar.sources=src/
+           -Dsonar.junit.reportsPath=target/surefire-reports/
+           -Dsonar.jacoco.reportsPath=taget/jacoco.exec
+           -Dsonar.have.checkstyle.reportPath=target/checkstyle-result.xml
+           -Dsonar.java.binaries=target/test-classes/com/visualpathit/account
